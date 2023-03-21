@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {useQuery, useMutation} from '@apollo/client';
 import { Jumbotron, Container, CardColumns, Card, Button } from 'react-bootstrap';
 import {GET_ME} from '../utils/queries';
-import {REMOVE_BOOK} from '../utils/mutations';
+import {REMOVE_BOOK} from '../utils/mutaitions';
 import Auth from '../utils/auth';
 
 const SavedBooks = () => {
