@@ -11,7 +11,7 @@ const SignupForm = (props) => {
     password: "",
   });
   const [showAlert, setShowAlert] = useState(false);
-  const [addUser, { error }] = useMutation(ADD_USER);
+  const [addUser] = useMutation(ADD_USER);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -23,7 +23,6 @@ const SignupForm = (props) => {
 
     try {
       // execute addUser mutation and pass in variable data from form
-      console.log(data);
       const { data } = await addUser({
         variables: { ...userFormData },
       });

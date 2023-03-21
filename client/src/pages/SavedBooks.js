@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {useQuery, useMutation} from '@apollo/client';
 import { Jumbotron, Container, CardColumns, Card, Button } from 'react-bootstrap';
 import {GET_ME} from '../utils/queries';
@@ -6,9 +6,9 @@ import {REMOVE_BOOK} from '../utils/mutations';
 import Auth from '../utils/auth';
 
 const SavedBooks = () => {
-  const {loading, data} = useQuery(GET_ME)
-  const [removeBook, {error}] = useMutation(REMOVE_BOOK)
-  const [userData, setUserData] = useState({});
+  useQuery(GET_ME)
+  const [removeBook] = useMutation(REMOVE_BOOK)
+  const [userData] = useState({});
   // const userData = data?.me || {};
 
   const userDataLength = Object.keys(userData).length;
@@ -23,7 +23,7 @@ const SavedBooks = () => {
     }
 
     try {
-      const {updatedUser} = await removeBook({
+      await removeBook({
         variables:{bookId}
       });
   // upon success, remove book's id from localStorage
