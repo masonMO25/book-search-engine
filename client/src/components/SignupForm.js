@@ -1,17 +1,24 @@
 import React, { useState } from "react";
+import { Alert, Button, Form } from "react-bootstrap";
+
 import { useMutation } from "@apollo/client";
-import { Form, Button, Alert } from "react-bootstrap";
 import { ADD_USER } from "../utils/mutaitions";
+
 import Auth from "../utils/auth";
 
-const SignupForm = (props) => {
+const SignupForm = () => {
+  // set initial form state
   const [userFormData, setUserFormData] = useState({
     username: "",
     email: "",
     password: "",
   });
+  // set state for form validation
+  const [validated] = useState(false);
+  // set state for alert
   const [showAlert, setShowAlert] = useState(false);
-  const [addUser] = useMutation(ADD_USER);
+
+  const [addUser, { error, data }] = useMutation(ADD_USER);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -21,27 +28,35 @@ const SignupForm = (props) => {
   const handleFormSubmit = async (event) => {
     event.preventDefault();
 
+    // check if form has everything (as per react-bootstrap docs)
+    const form = event.currentTarget;
+    if (form.checkValidity() === false) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
     try {
-      // execute addUser mutation and pass in variable data from form
       const { data } = await addUser({
         variables: { ...userFormData },
       });
 
-      if (!data.ok) {
-        throw new Error("something went wrong!");
-      }
-
-      //take token and set to localStorage
-      Auth.addUser(data.addUser.token);
-    } catch (e) {
-      console.error(e);
+      Auth.login(data.addUser.token);
+    } catch (err) {
+      console.error(err);
+      setShowAlert(true);
     }
+
+    setUserFormData({
+      username: "",
+      email: "",
+      password: "",
+    });
   };
 
   return (
     <>
       {/* This is needed for the validation functionality above */}
-      <Form onSubmit={handleFormSubmit}>
+      <Form noValidate validated={validated} onSubmit={handleFormSubmit}>
         {/* show alert if server response is bad */}
         <Alert
           dismissible
@@ -52,7 +67,7 @@ const SignupForm = (props) => {
           Something went wrong with your signup!
         </Alert>
 
-        <Form.Group>
+        <Form.Group className="mb-3">
           <Form.Label htmlFor="username">Username</Form.Label>
           <Form.Control
             type="text"
@@ -67,7 +82,7 @@ const SignupForm = (props) => {
           </Form.Control.Feedback>
         </Form.Group>
 
-        <Form.Group>
+        <Form.Group className="mb-3">
           <Form.Label htmlFor="email">Email</Form.Label>
           <Form.Control
             type="email"
@@ -82,7 +97,7 @@ const SignupForm = (props) => {
           </Form.Control.Feedback>
         </Form.Group>
 
-        <Form.Group>
+        <Form.Group className="mb-3">
           <Form.Label htmlFor="password">Password</Form.Label>
           <Form.Control
             type="password"
